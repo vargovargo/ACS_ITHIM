@@ -9,8 +9,9 @@ file <- "~/Documents/GitHub/ACS_ITHIM/data/NHTS_2009_transfer_US.txt"
 OLN <- read.table(file, sep="\t", as.is = T, skip=319, stringsAsFactors=FALSE)
 OLNheader <- read.table(file, sep="\t", as.is = T, nrows = 1)
 colnames(OLN) <- unlist(OLNheader)
-OLN <- select(OLN, geoid, Cluster, urban_group, est_pmiles2007_11)
-
+OLN <- select(OLN, geoid, Cluster, urban_group, est_pmiles2007_11) %>%
+  mutate(STFIPSnum = as.numeric(ifelse(nchar(geoid) == 10, stringr::str_sub(geoid, 1, 1), stringr::str_sub(geoid, 1, 2))),
+         CNTYFIPSnum = as.numeric(ifelse(nchar(geoid) == 10, stringr::str_sub(geoid, 2, 4), stringr::str_sub(geoid, 3, 5))))
 
 STclusterKey <- data.frame(Cluster = c(1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6,6), 
                            STFIPSnum = c(9,23,25,33,34,36,42,44,50,17,18,19,20,26,27,29,31,38,39,46,55,10,11,12,13,24,37,45,51,54,1,5,21,22,28,40,47,48,4,8,16,30,32,35,49,56,2,6,15,41,53),
@@ -84,9 +85,9 @@ NHTSmode <- read.csv(modeFile, header=T) %>% select(-TRP_MI_AVG) %>%
   group_by(STFIPSnum,  urban_group, modeNew) %>% 
   summarize(avgTravelTime = mean(TRVL_MIN_AVG, na.rm=T)) %>%
   ungroup() %>%
-  complete(STFIPSnum, urban_group, modeNew)
+  complete(STFIPSnum, urban_group, modeNew, fill = list(avgTravelTime = 0) )
 
-
+tractTravel <- left_join(OLN, NHTSmode)
 
 
 
