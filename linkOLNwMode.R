@@ -2,12 +2,14 @@ library(tidyverse)
 
 # this file is available from the 2009 Transferability study
 # Data dictionary https://www.rita.dot.gov/bts/sites/rita.dot.gov.bts/files/subject_areas/national_household_travel_survey/transfterability_statistics
-# download the data 
+# download the data here https://www.rita.dot.gov/bts/sites/rita.dot.gov.bts/files/subject_areas/national_household_travel_survey/census
+# available in the repository as well https://github.com/vargovargo/ACS_ITHIM/tree/master/data
 file <- "~/Documents/GitHub/ACS_ITHIM/data/NHTS_2009_transfer_US.txt"
 
 OLN <- read.table(file, sep="\t", as.is = T, skip=319, stringsAsFactors=FALSE)
 OLNheader <- read.table(file, sep="\t", as.is = T, nrows = 1)
 colnames(OLN) <- unlist(OLNheader)
+OLN <- select(OLN, geoid, Cluster, urban_group, est_pmiles2007_11)
 
 
 STclusterKey <- data.frame(Cluster = c(1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,6,6,6,6,6), 
@@ -64,12 +66,28 @@ STclusterKey <- data.frame(Cluster = c(1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2
                                         "Oregon",
                                         "Washington")
 )
+
 # this is a file created by Maggie from NHTS
 # it was created in Access and we need to check in with her to see how it was created and figure out how to recreate
+# available in the repository as well https://github.com/vargovargo/ACS_ITHIM/tree/master/data
 modeFile <- "~/Documents/GitHub/ACS_ITHIM/data/NHTS_clusterByMode.csv"
 
-NHTSmode <- read.csv(modeFile, header=T) %>% select(-TRP_MI_AVG) %>% mutate(urban_group = ifelse(Urbanicity %in% c("Second City","Suburban"), 2, 
-                                                                                   ifelse(Urbanicity == "Urban", 1, 3)))
+NHTSmode <- read.csv(modeFile, header=T) %>% select(-TRP_MI_AVG) %>% 
+  mutate(urban_group = ifelse(Urbanicity %in% c("Second City","Suburban"), 2,  
+                              ifelse(Urbanicity == "Urban", 1, 3)),
+         modeNew = factor(ifelse(as.character(Mode) %in% c("Car","Van","SUV","Pickup Truck", "Motorcycle"),"Drive",
+                                 ifelse(as.character(Mode) == "Walk","Walk",
+                                        ifelse(as.character(Mode) == "Bicycle","Bicycle",
+                                               ifelse(as.character(Mode) %in% c("Local Public Bus","City to City Bus","street car/trolley","Subway/elevated train"),"Transit","Other")))),
+                          levels = c("Drive","Walk","Bicycle","Transit","Other"))) %>% 
+  full_join(STclusterKey) %>%
+  group_by(STFIPSnum,  urban_group, modeNew) %>% 
+  summarize(avgTravelTime = mean(TRVL_MIN_AVG, na.rm=T)) %>%
+  ungroup() %>%
+  complete(STFIPSnum, urban_group, modeNew)
+
+
+
 
 
 
