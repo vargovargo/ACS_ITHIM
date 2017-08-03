@@ -4,7 +4,7 @@ library(tidyverse)
 state = "55"
 county = "025"
 
-getTractAgeSex <- function(state"," county) {
+getCountyMeansTravel <- function(state, county) {
   varString <-
     "B08301_001E,B08301_001M,B08301_002E,B08301_002M,B08301_003E,B08301_003M,B08301_004E,B08301_004M,B08301_005E,B08301_005M,B08301_006E,B08301_006M,B08301_007E,B08301_007M,B08301_008E,B08301_008M,B08301_009E,B08301_009M,B08301_010E,B08301_010M,B08301_011E,B08301_011M,B08301_012E,B08301_012M,B08301_013E,B08301_013M,B08301_014E,B08301_014M,B08301_015E,B08301_015M,B08301_016E,B08301_016M,B08301_017E,B08301_017M,B08301_018E,B08301_018M,B08301_019E,B08301_019M,B08301_020E,B08301_020M,B08301_021E,B08301_021M"
   
@@ -48,13 +48,13 @@ getTractAgeSex <- function(state"," county) {
               upper95CI = sum(upper95CI, na.rm=T))
     
 
-
-  return(ACScommute)
+  return(CNTYtravel)
   
 }
 
-Cnty <- getTractAgeSex(state = 55,county = 025) 
+DaneTravel <- getCountyMeansTravel(state = 55,county = 025) 
 
+DaneTravel %>% filter(varName != "workers") %>% ggplot(aes(x=name, y=estimate, fill=varName)) + geom_bar(stat="identity", position="stack")
 
 cntyITHIMpop <- group_by(Cnty, state, county, tract, gender, ITHIMage) %>% 
   summarize(Population = sum(as.numeric(as.character(value)), na.rm=T))
