@@ -1,7 +1,6 @@
 library(jsonlite)
 library(tidyverse)
 
-
 state = "55"
 county = "025"
 
