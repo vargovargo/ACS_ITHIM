@@ -13,10 +13,7 @@ varStringMALE <-
 varStringFEMALE <-
   "B08406_035E,B08406_035M,B08406_036E,B08406_036M,B08406_042E,B08406_042M,B08406_048E,B08406_048M,B08406_049E,B08406_049M,B08406_050E,B08406_050M,B08406_051E,B08406_051M"
 
-
 varString <- varStringTOTAL
-
-
 
 singleSex <- function(varString, sex) {
   # https://api.census.gov/data/2015/acs5?get=NAME,B01001_001E&for=county:013&in=state:02
