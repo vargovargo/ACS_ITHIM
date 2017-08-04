@@ -1,7 +1,8 @@
 library(jsonlite)
 library(tidyverse)
 
-singleSex <- function(varString, sex) {
+# function to process single mode
+singleModeByTime <- function(varString, mode) {
   # https://api.census.gov/data/2015/acs5?get=NAME,B01001_001E&for=county:013&in=state:02
   
   ACScommute <-
@@ -21,64 +22,48 @@ singleSex <- function(varString, sex) {
   colnames(ACScommute) <-
     c(
       "name",
-      "personsE",
-      "personsM",
-      "carTruckVanE",
-      "carTruckVanM",
-      "publicTransportE",
-      "publicTransportM",
-      "bicycleE",
-      "bicycleM",
-      "walkE",
-      "walkM",
-      "taxiMotoE",
-      "taxiMotoM",
-      "workHomeE",
-      "workHomeM",
+      "minLT10E",
+      "minLT10M",
+      "min10to14E",
+      "min10to14M",
+      "min15to19E",
+      "min15to19M",
+      "min20to24E",
+      "min20to24M",
+      "min25to29E",
+      "min25to29M",
+      "min30to34E",
+      "min30to34M",
+      "min35to44E",
+      "min35to44M",
+      "min45to59E",
+      "min45to59M",
+      "minOver60E",
+      "minOver60M",
       "state",
       "county"
     )
   
-  
-  xwk <-
-    data.frame(
-      variable = c(
-        "persons",
-        "carTruckVan",
-        "publicTransport",
-        "bicycle",
-        "walk",
-        "taxiMoto",
-        "workHome"
-      ),
-      varName = c(
-        "workers",
-        "drive",
-        "transit",
-        "bicycle",
-        "walk",
-        "other",
-        "other"
-      )
-    )
-  
-  
   CNTYtravel <-
     ACScommute %>% gather(
-      personsE,
-      personsM,
-      carTruckVanE,
-      carTruckVanM,
-      publicTransportE,
-      publicTransportM,
-      bicycleE,
-      bicycleM,
-      walkE,
-      walkM,
-      taxiMotoE,
-      taxiMotoM,
-      workHomeE,
-      workHomeM,
+      minLT10E,
+      minLT10M,
+      min10to14E,
+      min10to14M,
+      min15to19E,
+      min15to19M,
+      min20to24E,
+      min20to24M,
+      min25to29E,
+      min25to29M,
+      min30to34E,
+      min30to34M,
+      min35to44E,
+      min35to44M,
+      min45to59E,
+      min45to59M,
+      minOver60E,
+      minOver60M,
       key = variable,
       value = value
     ) %>%
@@ -89,20 +74,22 @@ singleSex <- function(varString, sex) {
            M = as.numeric(M))  %>%
     mutate(lower95CI = E - (1.96 / 1.645 * M),
            upper95CI = E + (1.96 / 1.645 * M)) %>%
-    left_join(xwk) %>%
-    group_by(name, state, county, varName) %>%
+    group_by(name, state, county, variable) %>%
     summarize(
       estimate = sum(E, na.rm = T),
       lower95CI = sum(lower95CI, na.rm = T),
       upper95CI = sum(upper95CI, na.rm = T)
     ) %>%
-    mutate(sex = sex) %>%
-    filter(varName != "workers")
+    mutate(mode = mode)
 }
 
-getCountyMeansTravelBySex <- function(state, county) {
+
+
+
+# function to process county data for each mode
+getCountyMeansTravelByTime <- function(state, county) {
   
-  varStringDRIVE <-
+  varStringCAR <-
     "B08534_012E,B08534_012M,B08534_013E,B08534_013M,B08534_014E,B08534_014M,B08534_015E,B08534_015M,B08534_016E,B08534_016M,B08534_017E,B08534_017M,B08534_018E,B08534_018M,B08534_019E,B08534_019M,B08534_020E,B08534_020M"
   
   varStringTRANSIT <-
@@ -114,14 +101,12 @@ getCountyMeansTravelBySex <- function(state, county) {
   varStringBIKE <-
     "B08534_112E,B08534_112M,B08534_113E,B08534_113M,B08534_114E,B08534_114M,B08534_115E,B08534_115M,B08534_116E,B08534_116M,B08534_117E,B08534_117M,B08534_118E,B08534_118M,B08534_119E,B08534_119M,B08534_120E,B08534_120M"
   
-  
-  
-   #tblTOT <- singleSex(varStringTOTAL, "TOTAL")
-   tblMAL <- singleSex(varStringMALE, "MALE")
-   tblFEM <- singleSex(varStringFEMALE, "FEMALE")
+   tblCAR <- singleModeByTime(varStringCAR, "drive")
+   tblTRANSIT <- singleModeByTime(varStringTRANSIT, "transit")
+   tblWALK <- singleModeByTime(varStringWALK, "walk")
+   tblBIKE <- singleModeByTime(varStringWALK, "bicycle")
    
-   
-   all <- bind_rows(tblMAL, tblFEM)
+   all <- bind_rows(tblCAR, tblTRANSIT, tblWALK, tblBIKE)
 
   return(all)
   
@@ -129,4 +114,6 @@ getCountyMeansTravelBySex <- function(state, county) {
 
 
 # example
-# DaneTravel <- getCountyMeansTravelBySex(state = 55,county = 025)
+# DaneTravelMeansByTime <- getCountyMeansTravelByTime(state = 55,county = 025)
+
+

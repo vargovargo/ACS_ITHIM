@@ -125,4 +125,4 @@ getCountyMeansTravelBySex <- function(state, county) {
 
 
 # example
-# DaneTravel <- getCountyMeansTravelBySex(state = 55,county = 025)
+# DaneTravelMeansBySex <- getCountyMeansTravelBySex(state = 55,county = 025)

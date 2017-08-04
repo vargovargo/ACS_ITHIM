@@ -123,4 +123,4 @@ getCountyMeansTravel <- function(state, county) {
 
 
 # example
-# DaneTravel <- getCountyMeansTravel(state = 55,county = 025)
+# DaneTravelMeans <- getCountyMeansTravel(state = 55,county = 025)
