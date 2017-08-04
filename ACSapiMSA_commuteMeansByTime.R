@@ -112,6 +112,6 @@ getMSAMeansTravelByTime <- function(msa){
 }
 
 # example
-# PortlandMSATravelMeansByTime <- getMSAMeansTravelByTime(msa = 38900)
+# getMSAMeansTravelByTime(msa = 38900) %>%  ggplot(aes(x=travelTime, y=estimate, fill=mode)) + geom_bar(stat="identity")
 
 
