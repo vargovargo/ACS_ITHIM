@@ -5,8 +5,14 @@ state = "55"
 county = "025"
 
 getCountyMeansTravel <- function(state, county) {
-  varString <-
-    "B08301_001E,B08301_001M,B08301_002E,B08301_002M,B08301_010E,B08301_010M,B08301_016E,B08301_016M,B08301_017E,B08301_017M,B08301_018E,B08301_018M,B08301_019E,B08301_019M,B08301_020E,B08301_020M,B08301_021E,B08301_021M"
+  varStringTOTAL <-
+    "B08406_001E,B08406_001M,B08406_002E,B08406_002M,B08406_008E,B08406_008M,B08406_014E,B08406_014M,B08406_015E,B08406_015M,B08406_016E,B08406_016M,B08406_017E,B08406_017M"
+  
+  varStringMALE <-
+    "B08406_018E,B08406_018M,B08406_019E,B08406_019M,B08406_025E,B08406_025M,B08406_031E,B08406_031M,B08406_032E,B08406_032M,B08406_033E,B08406_033M,B08406_034E,B08406_034M"
+  
+  varStringFEMALE <-
+    "B08406_035E,B08406_035M,B08406_036E,B08406_036M,B08406_042E,B08406_042M,B08406_048E,B08406_048M,B08406_049E,B08406_049M,B08406_050E,B08406_050M,B08406_051E,B08406_051M"
   
   # https://api.census.gov/data/2015/acs5?get=NAME,B01001_001E&for=county:013&in=state:02
   
@@ -14,7 +20,7 @@ getCountyMeansTravel <- function(state, county) {
     as.data.frame(fromJSON(
       paste0(
         "https://api.census.gov/data/2015/acs5?get=NAME,",
-        varString,
+        varStringTOTAL,
         "&for=county:",
         county,
         "&in=state:",
@@ -22,29 +28,25 @@ getCountyMeansTravel <- function(state, county) {
         "&key=f78d6b6c18608edc379b5a06c55407ceb45e7038"
       )
     ))
-  ACScommute <- ACScommute[-1,]
+  ACScommute <- ACScommute[-1, ]
   
   colnames(ACScommute) <-
     c(
       "name",
-      "B08301_001E",
-      "B08301_001M",
-      "B08301_002E",
-      "B08301_002M",
-      "B08301_010E",
-      "B08301_010M",
-      "B08301_016E",
-      "B08301_016M",
-      "B08301_017E",
-      "B08301_017M",
-      "B08301_018E",
-      "B08301_018M",
-      "B08301_019E",
-      "B08301_019M",
-      "B08301_020E",
-      "B08301_020M",
-      "B08301_021E",
-      "B08301_021M",
+      "B08406_001E",
+      "B08406_001M",
+      "B08406_002E",
+      "B08406_002M",
+      "B08406_008E",
+      "B08406_008M",
+      "B08406_014E",
+      "B08406_014M",
+      "B08406_015E",
+      "B08406_015M",
+      "B08406_016E",
+      "B08406_016M",
+      "B08406_017E",
+      "B08406_017M",
       "state",
       "county"
     )
@@ -53,22 +55,18 @@ getCountyMeansTravel <- function(state, county) {
   xwk <-
     data.frame(
       variable = c(
-        "B08301_001",
-        "B08301_002",
-        "B08301_010",
-        "B08301_016",
-        "B08301_017",
-        "B08301_018",
-        "B08301_019",
-        "B08301_020",
-        "B08301_021"
+        "B08406_001",
+        "B08406_002",
+        "B08406_008",
+        "B08406_014",
+        "B08406_015",
+        "B08406_016",
+        "B08406_017"
       ),
       varName = c(
         "workers",
         "drive",
         "transit",
-        "other",
-        "drive",
         "bicycle",
         "walk",
         "other",
@@ -79,24 +77,20 @@ getCountyMeansTravel <- function(state, county) {
   
   CNTYtravel <-
     ACScommute %>% gather(
-      B08301_001E,
-      B08301_001M,
-      B08301_002E,
-      B08301_002M,
-      B08301_010E,
-      B08301_010M,
-      B08301_016E,
-      B08301_016M,
-      B08301_017E,
-      B08301_017M,
-      B08301_018E,
-      B08301_018M,
-      B08301_019E,
-      B08301_019M,
-      B08301_020E,
-      B08301_020M,
-      B08301_021E,
-      B08301_021M,
+      B08406_001E,
+      B08406_001M,
+      B08406_002E,
+      B08406_002M,
+      B08406_008E,
+      B08406_008M,
+      B08406_014E,
+      B08406_014M,
+      B08406_015E,
+      B08406_015M,
+      B08406_016E,
+      B08406_016M,
+      B08406_017E,
+      B08406_017M,
       key = variable,
       value = value
     ) %>%
