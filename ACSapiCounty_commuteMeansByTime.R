@@ -107,7 +107,7 @@ getCountyMeansTravelByTime <- function(state, county) {
    tblCAR <- singleModeByTime(varStringCAR, "drive")
    tblTRANSIT <- singleModeByTime(varStringTRANSIT, "transit")
    tblWALK <- singleModeByTime(varStringWALK, "walk")
-   tblBIKE <- singleModeByTime(varStringWALK, "bicycle")
+   tblBIKE <- singleModeByTime(varStringBIKE, "bicycle")
    
    all <- bind_rows(tblCAR, tblTRANSIT, tblWALK, tblBIKE)
 
