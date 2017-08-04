@@ -86,9 +86,6 @@ singleModeByTime <- function(varString, mode) {
     select(-variable)
 }
 
-
-
-
 # function to process county data for each mode
 getCountyMeansTravelByTime <- function(state, county) {
   
@@ -115,8 +112,6 @@ getCountyMeansTravelByTime <- function(state, county) {
   
 }
 
-
 # example
-# DaneTravelMeansByTime <- getCountyMeansTravelByTime(state = 55,county = 025)
-
+# getCountyMeansTravelByTime(state = 55,county = 025) %>%  ggplot(aes(x=travelTime, y=estimate, fill=mode)) + geom_bar(stat="identity")
 

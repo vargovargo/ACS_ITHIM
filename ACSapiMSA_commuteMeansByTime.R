@@ -85,11 +85,8 @@ singleModeByTime <- function(varString, mode) {
     select(-variable)
 }
 
-
-
-
 # function to process county data for each mode
-getMSAMeansTravelByTime <- function(msa) {
+getMSAMeansTravelByTime <- function(msa){
   
   varStringCAR <-
     "B08534_012E,B08534_012M,B08534_013E,B08534_013M,B08534_014E,B08534_014M,B08534_015E,B08534_015M,B08534_016E,B08534_016M,B08534_017E,B08534_017M,B08534_018E,B08534_018M,B08534_019E,B08534_019M,B08534_020E,B08534_020M"
@@ -106,14 +103,13 @@ getMSAMeansTravelByTime <- function(msa) {
    tblCAR <- singleModeByTime(varStringCAR, "drive")
    tblTRANSIT <- singleModeByTime(varStringTRANSIT, "transit")
    tblWALK <- singleModeByTime(varStringWALK, "walk")
-   tblBIKE <- singleModeByTime(varStringWALK, "bicycle")
+   tblBIKE <- singleModeByTime(varStringBIKE, "bicycle")
    
    all <- bind_rows(tblCAR, tblTRANSIT, tblWALK, tblBIKE)
 
   return(all)
   
 }
-
 
 # example
 # PortlandMSATravelMeansByTime <- getMSAMeansTravelByTime(msa = 38900)
