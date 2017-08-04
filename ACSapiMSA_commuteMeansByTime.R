@@ -1,6 +1,7 @@
 library(jsonlite)
 library(tidyverse)
 
+
 # function to process single mode
 singleModeByTime <- function(varString, mode) {
   # Example
@@ -78,7 +79,10 @@ singleModeByTime <- function(varString, mode) {
       lower95CI = sum(lower95CI, na.rm = T),
       upper95CI = sum(upper95CI, na.rm = T)
     ) %>%
-    mutate(mode = mode)
+    mutate(mode = mode, 
+           travelTime = factor(variable, levels =c("minLT10","min10to14","min15to19","min20to24","min25to29","min30to34","min35to44","min45to59","minOver60"))) %>%
+    arrange(mode, travelTime) %>%
+    select(-variable)
 }
 
 
