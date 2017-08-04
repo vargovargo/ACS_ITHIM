@@ -113,7 +113,8 @@ getCountyMeansTravel <- function(state, county) {
       estimate = sum(E, na.rm = T),
       lower95CI = sum(lower95CI, na.rm = T),
       upper95CI = sum(upper95CI, na.rm = T)
-    )
+    ) %>%
+    filter(varName != "workers")
   
   
   return(CNTYtravel)
