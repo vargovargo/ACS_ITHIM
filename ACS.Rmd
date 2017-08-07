@@ -1,24 +1,12 @@
-# U.S. National Household Travel Surevy
+# ACS
 
-```{r libs, eval = FALSE, echo = FALSE, results = "hide", warning = FALSE, error = FALSE, message = FALSE}
-options(repos='http://cran.rstudio.com/')
+```{r libs, eval = TRUE, echo = FALSE, results = "hide", warning = FALSE, error = FALSE, message = FALSE}
 rm(list=ls())
-#install.packages(c("ggplot2","dplyr","openssl","httr", "git2r", "devtools", "roxygen2"))
-library("devtools")
-library("TravelSurvey")
-#library("reshape2")
-#library("plyr")
-#library("dplyr")
-install("~/ITHIM/")
-library("ITHIM")
-fig.width <- 6 # inches
-phi <- (1+sqrt(5))/2 # the golden ratio ;)
+library(jsonlite)
+library(tidyverse)
 ```
 
 ```{r chunk1, eval = TRUE, echo = FALSE, results = "hide", warning = FALSE, error = FALSE, message = FALSE}
-library(jsonlite)
-library(tidyverse)
-
 # function to process single mode
 singleModeByTime <- function(varString, mode, state, county) {
   # https://api.census.gov/data/2015/acs5?get=NAME,B01001_001E&for=county:013&in=state:02
@@ -124,7 +112,12 @@ getCountyMeansTravelByTime <- function(state, county) {
    tblWALK <- singleModeByTime(varStringWALK, "walk", state, county)
    tblBIKE <- singleModeByTime(varStringBIKE, "bicycle", state, county)
    
-   all <- bind_rows(tblCAR, tblTRANSIT, tblWALK, tblBIKE)
+  all <- bind_rows(tblCAR, tblTRANSIT, tblWALK, tblBIKE)
+
+  all <- within(all, {
+    travelTime <- factor(travelTime, levels = c("minLT10", "min10to14", "min15to19","min20to24","min25to29","min30to34","min35to44","min45to59","minOver60"))
+    mode <- factor(mode, levels = c("drive","walk","bicycle","transit"))
+  })
 
   return(all)
   
@@ -135,9 +128,7 @@ getCountyMeansTravelByTime <- function(state, county) {
 ```
 
 
-```{r chunk2, eval = TRUE, echo = FALSE, results = "hide", warning = FALSE, error = FALSE, message = FALSE}
+```{r chunk2, eval = TRUE, echo = TRUE, results = "show", warning = FALSE, error = FALSE, message = FALSE, fig.width = 12}
 DaneTravelMeansByTime <- getCountyMeansTravelByTime(state = 55, county = 025)
-DaneTravelMeansByTime <- within(DaneTravelMeansByTime, travelTime <- factor(travelTime, levels = c("minLT10", "min10to14", "min15to19","min20to24","min25to29","min30to34","min35to44","min45to59","minOver60")))
-DaneTravelMeansByTime <- within(DaneTravelMeansByTime, mode <- factor(mode, levels = c("drive","walk","bicycle","transit")))
 ggplot(DaneTravelMeansByTime, aes(x = travelTime, y = estimate, fill = mode)) + geom_bar(stat = "identity", position = "dodge") + theme_bw() + ylab("Number of Commuters") + xlab("Duration of Commute")
 ```
