@@ -132,3 +132,9 @@ getCountyMeansTravelByTime <- function(state, county) {
 DaneTravelMeansByTime <- getCountyMeansTravelByTime(state = 55, county = 025)
 ggplot(DaneTravelMeansByTime, aes(x = travelTime, y = estimate, fill = mode)) + geom_bar(stat = "identity", position = "dodge") + theme_bw() + ylab("Number of Commuters") + xlab("Duration of Commute")
 ```
+
+```{r chunk3, eval = TRUE, echo = TRUE, results = "show", warning = FALSE, error = FALSE, message = FALSE, fig.width = 12}
+library("ITHIM")
+msaIDFile <- read.csv(system.file("join2.csv", package = "ITHIM"), stringsAsFactors = FALSE)
+msaIDFile %>% filter(msaNHTS  == 6442) %>% select(stateFIPS,countyFIPS)
+```
