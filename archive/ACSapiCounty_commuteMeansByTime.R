@@ -1,19 +1,19 @@
 library(jsonlite)
 library(tidyverse)
 
-
 # function to process single mode
 singleModeByTime <- function(varString, mode) {
-  # Example
-  # https://api.census.gov/data/2015/acs5?get=NAME,B08534_011E,B08534_061E,B08534_101E,B08534_111E&for=metropolitan+statistical+area/micropolitan+statistical+area:38900
+  # https://api.census.gov/data/2015/acs5?get=NAME,B01001_001E&for=county:013&in=state:02
   
   ACScommute <-
     as.data.frame(fromJSON(
       paste0(
         "https://api.census.gov/data/2015/acs5?get=NAME,",
         varString,
-        "&for=metropolitan+statistical+area/micropolitan+statistical+area:",
-        msa,
+        "&for=county:",
+        county,
+        "&in=state:",
+        state,
         "&key=f78d6b6c18608edc379b5a06c55407ceb45e7038"
       )
     ))
@@ -40,7 +40,8 @@ singleModeByTime <- function(varString, mode) {
       "min45to59M",
       "minOver60E",
       "minOver60M",
-      "msa"
+      "state",
+      "county"
     )
   
   CNTYtravel <-
@@ -73,7 +74,7 @@ singleModeByTime <- function(varString, mode) {
            M = as.numeric(M))  %>%
     mutate(lower95CI = E - (1.96 / 1.645 * M),
            upper95CI = E + (1.96 / 1.645 * M)) %>%
-    group_by(name, msa, variable) %>%
+    group_by(name, state, county, variable) %>%
     summarize(
       estimate = sum(E, na.rm = T),
       lower95CI = sum(lower95CI, na.rm = T),
@@ -85,11 +86,8 @@ singleModeByTime <- function(varString, mode) {
     select(-variable)
 }
 
-
-
-
 # function to process county data for each mode
-getMSAMeansTravelByTime <- function(msa) {
+getCountyMeansTravelByTime <- function(state, county) {
   
   varStringCAR <-
     "B08534_012E,B08534_012M,B08534_013E,B08534_013M,B08534_014E,B08534_014M,B08534_015E,B08534_015M,B08534_016E,B08534_016M,B08534_017E,B08534_017M,B08534_018E,B08534_018M,B08534_019E,B08534_019M,B08534_020E,B08534_020M"
@@ -106,7 +104,7 @@ getMSAMeansTravelByTime <- function(msa) {
    tblCAR <- singleModeByTime(varStringCAR, "drive")
    tblTRANSIT <- singleModeByTime(varStringTRANSIT, "transit")
    tblWALK <- singleModeByTime(varStringWALK, "walk")
-   tblBIKE <- singleModeByTime(varStringWALK, "bicycle")
+   tblBIKE <- singleModeByTime(varStringBIKE, "bicycle")
    
    all <- bind_rows(tblCAR, tblTRANSIT, tblWALK, tblBIKE)
 
@@ -114,8 +112,6 @@ getMSAMeansTravelByTime <- function(msa) {
   
 }
 
-
 # example
-# PortlandMSATravelMeansByTime <- getMSAMeansTravelByTime(msa = 38900)
-
+# getCountyMeansTravelByTime(state = 55,county = 025) %>%  ggplot(aes(x=travelTime, y=estimate, fill=mode)) + geom_bar(stat="identity")
 
