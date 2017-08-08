@@ -2,7 +2,7 @@ library(jsonlite)
 library(tidyverse)
 
 # function to process single mode
-singleModeByTime <- function(varString, mode) {
+singleModeByIncome <- function(varString, mode, state, county) {
   # https://api.census.gov/data/2015/acs5?get=NAME,B01001_001E&for=county:013&in=state:02
   
   ACScommute <-
@@ -22,48 +22,44 @@ singleModeByTime <- function(varString, mode) {
   colnames(ACScommute) <-
     c(
       "name",
-      "minLT10E",
-      "minLT10M",
-      "min10to14E",
-      "min10to14M",
-      "min15to19E",
-      "min15to19M",
-      "min20to24E",
-      "min20to24M",
-      "min25to29E",
-      "min25to29M",
-      "min30to34E",
-      "min30to34M",
-      "min35to44E",
-      "min35to44M",
-      "min45to59E",
-      "min45to59M",
-      "minOver60E",
-      "minOver60M",
+      "incLT10E",
+      "incLT10M",
+      "inc10to15E",
+      "inc10to15M",
+      "inc15to25E",
+      "inc15to25M",
+      "inc25to35E",
+      "inc25to35M",
+      "inc35to50E",
+      "inc35to50M",
+      "inc50to65E",
+      "inc50to65M",
+      "inc65to75E",
+      "inc65to75M",
+      "incOver75E",
+      "incOver75M",
       "state",
       "county"
     )
   
   CNTYtravel <-
     ACScommute %>% gather(
-      minLT10E,
-      minLT10M,
-      min10to14E,
-      min10to14M,
-      min15to19E,
-      min15to19M,
-      min20to24E,
-      min20to24M,
-      min25to29E,
-      min25to29M,
-      min30to34E,
-      min30to34M,
-      min35to44E,
-      min35to44M,
-      min45to59E,
-      min45to59M,
-      minOver60E,
-      minOver60M,
+      incLT10E,
+      incLT10M,
+      inc10to15E,
+      inc10to15M,
+      inc15to25E,
+      inc15to25M,
+      inc25to35E,
+      inc25to35M,
+      inc35to50E,
+      inc35to50M,
+      inc50to65E,
+      inc50to65M,
+      inc65to75E,
+      inc65to75M,
+      incOver75E,
+      incOver75M,
       key = variable,
       value = value
     ) %>%
@@ -81,37 +77,55 @@ singleModeByTime <- function(varString, mode) {
       upper95CI = sum(upper95CI, na.rm = T)
     ) %>%
     mutate(mode = mode, 
-           travelTime = factor(variable, levels =c("minLT10","min10to14","min15to19","min20to24","min25to29","min30to34","min35to44","min45to59","minOver60"))) %>%
-    arrange(mode, travelTime) %>%
+           income = factor(variable, levels =c("incLT10","inc10to15","inc15to25","inc25to35","inc35to50","inc50to65","inc65to75","incOver75"))) %>%
+    arrange(mode, income) %>%
     select(-variable)
 }
 
 # function to process county data for each mode
-getCountyMeansTravelByTime <- function(state, county) {
+getCountyMeansTravelByIncome <- function(state, county) {
   
   varStringCAR <-
-    "B08534_012E,B08534_012M,B08534_013E,B08534_013M,B08534_014E,B08534_014M,B08534_015E,B08534_015M,B08534_016E,B08534_016M,B08534_017E,B08534_017M,B08534_018E,B08534_018M,B08534_019E,B08534_019M,B08534_020E,B08534_020M"
+    "B08519_011E,B08519_011M,B08519_012E,B08519_012M,B08519_013E,B08519_013M,B08519_014E,B08519_014M,B08519_015E,B08519_015M,B08519_016E,B08519_016M,B08519_017E,B08519_017M,B08519_018E,B08519_018M"
+  
+  varStringCARPOOL <-
+    "B08519_020E,B08519_020M,B08519_021E,B08519_021M,B08519_022E,B08519_022M,B08519_023E,B08519_023M,B08519_024E,B08519_024M,B08519_025E,B08519_025M,B08519_026E,B08519_026M,B08519_027E,B08519_027M"
   
   varStringTRANSIT <-
-    "B08534_062E,B08534_062M,B08534_063E,B08534_063M,B08534_064E,B08534_064M,B08534_065E,B08534_065M,B08534_066E,B08534_066M,B08534_067E,B08534_067M,B08534_068E,B08534_068M,B08534_069E,B08534_069M,B08534_070E,B08534_070M"
+    "B08519_029E,B08519_029M,B08519_030E,B08519_030M,B08519_031E,B08519_031M,B08519_032E,B08519_032M,B08519_033E,B08519_033M,B08519_034E,B08519_034M,B08519_035E,B08519_035M,B08519_036E,B08519_036M"
   
   varStringWALK <-
-    "B08534_102E,B08534_102M,B08534_103E,B08534_103M,B08534_104E,B08534_104M,B08534_105E,B08534_105M,B08534_106E,B08534_106M,B08534_107E,B08534_107M,B08534_108E,B08534_108M,B08534_109E,B08534_109M,B08534_110E,B08534_110M"
+    "B08519_038E,B08519_038M,B08519_039E,B08519_039M,B08519_040E,B08519_040M,B08519_041E,B08519_041M,B08519_042E,B08519_042M,B08519_043E,B08519_043M,B08519_044E,B08519_044M,B08519_045E,B08519_045M"
   
   varStringBIKE <-
-    "B08534_112E,B08534_112M,B08534_113E,B08534_113M,B08534_114E,B08534_114M,B08534_115E,B08534_115M,B08534_116E,B08534_116M,B08534_117E,B08534_117M,B08534_118E,B08534_118M,B08534_119E,B08534_119M,B08534_120E,B08534_120M"
+    "B08519_047E,B08519_047M,B08519_048E,B08519_048M,B08519_049E,B08519_049M,B08519_050E,B08519_050M,B08519_051E,B08519_051M,B08519_052E,B08519_052M,B08519_053E,B08519_053M,B08519_054E,B08519_054M"
   
-   tblCAR <- singleModeByTime(varStringCAR, "drive")
-   tblTRANSIT <- singleModeByTime(varStringTRANSIT, "transit")
-   tblWALK <- singleModeByTime(varStringWALK, "walk")
-   tblBIKE <- singleModeByTime(varStringBIKE, "bicycle")
-   
-   all <- bind_rows(tblCAR, tblTRANSIT, tblWALK, tblBIKE)
-
+  tblCAR <- singleModeByIncome(varStringCAR, "drive", state, county)
+  tblCARPOOL <- singleModeByIncome(varStringCARPOOL, "drive", state, county)
+  tblTRANSIT <- singleModeByIncome(varStringTRANSIT, "transit", state, county)
+  tblWALK <- singleModeByIncome(varStringWALK, "walk", state, county)
+  tblBIKE <- singleModeByIncome(varStringBIKE, "bicycle", state, county)
+  
+  all <-
+    bind_rows(tblCAR, tblCARPOOL, tblTRANSIT, tblWALK, tblBIKE) %>%
+    group_by(name, state, county, mode, income) %>%
+    summarize(
+      estimate = sum(estimate, na.rm = T),
+      lower95CI = sum(lower95CI, na.rm = T),
+      upper95CI = sum(upper95CI, na.rm = T)
+    ) %>%
+    within({
+    income <- factor(income, levels = c("incLT10","inc10to15","inc15to25","inc25to35","inc35to50","inc50to65","inc65to75","incOver75"))
+    mode <- factor(mode, levels = c("drive","walk","bicycle","transit"))
+  }) 
+  
   return(all)
   
 }
-
 # example
-# getCountyMeansTravelByTime(state = 55,county = 025) %>%  ggplot(aes(x=travelTime, y=estimate, fill=mode)) + geom_bar(stat="identity")
+# getCountyMeansTravelByIncome(state = 55,county = 025) %>%  ggplot(aes(x=income, y=estimate, fill=mode)) + geom_bar(stat="identity")
+
+DaneTravelMeansByIncome <- getCountyMeansTravelByIncome(state = 55, county = 025)
+ggplot(DaneTravelMeansByIncome, aes(x = income, y = estimate, fill = mode)) + geom_bar(stat = "identity", position = "dodge") + theme_bw() + ylab("Number of Commuters") + xlab("Workers Annual Salary (2012 adj.)")
+
 
