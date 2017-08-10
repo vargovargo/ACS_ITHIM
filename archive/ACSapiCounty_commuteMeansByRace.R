@@ -21,12 +21,12 @@ singleRace <- function(varString, race) {
   colnames(ACScommute) <-
     c(
       "name",
-      "carE",
-      "carM",
+      "driveE",
+      "driveM",
       "carPoolE",
       "carPoolM",
-      "publicTransportE",
-      "publicTransportM",
+      "transitE",
+      "transitM",
       "walkE",
       "walkM",
       "bicycleE",
@@ -39,12 +39,12 @@ singleRace <- function(varString, race) {
   
   CNTYtravel <-
     ACScommute %>% gather(
-      carE,
-      carM,
+      driveE,
+      driveM,
       carPoolE,
       carPoolM,
-      publicTransportE,
-      publicTransportM,
+      transitE,
+      transitM,
       walkE,
       walkM,
       bicycleE,
@@ -103,7 +103,11 @@ getCountyMeansTravelByRace <- function(state, county) {
    tblHISP <- singleRace(varStringHISP, "Hispanic")
    
    
-   all <- bind_rows(tblWHITE, tblBLACK, tblINDIAN, tblASIAN, tblISLANDER, tblOTHER, tblTWO, tblNONHISP, tblHISP)
+   all <- bind_rows(tblWHITE, tblBLACK, tblINDIAN, tblASIAN, tblISLANDER, tblOTHER, tblTWO, tblNONHISP, tblHISP) %>%
+     within({
+       race <- factor(race, levels = c("White","Black","American Indian","Asian","Pacific Islander","Other","Multiple races","White Non-Hispanic", "Hispanic"))
+       mode <- factor(variable, levels = c("drive","carPool","walk","bicycle","transit","workHome"))
+     }) 
 
   return(all)
 }
@@ -112,4 +116,4 @@ getCountyMeansTravelByRace <- function(state, county) {
 
 # example
 DaneTravelMeansByRace <- getCountyMeansTravelByRace(state = 55,county = 025)
-ggplot(DaneTravelMeansByRace, aes(x = race, y = estimate, fill = variable)) + geom_bar(stat = "identity", position = "dodge") + theme_bw() + ylab("Number of Commuters") + xlab("Workers Annual Salary (2012 adj.)")
+ggplot(DaneTravelMeansByRace, aes(x = race, y = estimate, fill = mode)) + geom_bar(stat = "identity", position = "dodge") + theme_bw() + ylab("Number of Commuters") + xlab("Workers Annual Salary (2012 adj.)")
