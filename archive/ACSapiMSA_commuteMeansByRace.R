@@ -89,15 +89,15 @@ getMSAMeansTravelByRace <- function(msa) {
     "B08505I_002E,B08505I_002M,B08505I_003E,B08505I_003M,B08505I_004E,B08505I_004M,B08505I_005E,B08505I_005M,B08505I_006E,B08505I_006M,B08505I_007E,B08505I_007M"
   
   
-   tblWHITE <- singleRace(varStringWHITE, "White")
-   tblBLACK <- singleRace(varStringBLACK, "Black")
-   tblINDIAN <- singleRace(varStringINDIAN, "American Indian")
-   tblASIAN <- singleRace(varStringASIAN, "Asian")
-   tblISLANDER <- singleRace(varStringISLANDER, "Pacific Islander")
-   tblOTHER <- singleRace(varStringOTHER, "Other")
-   tblTWO <- singleRace(varStringTWO, "Multiple races")
-   tblNONHISP <- singleRace(varStringNONHISP, "White Non-Hispanic")
-   tblHISP <- singleRace(varStringHISP, "Hispanic")
+   tblWHITE <- singleRace(varString = varStringWHITE, race = "White", msa = msa)
+   tblBLACK <- singleRace(varString = varStringBLACK,race =  "Black", msa = msa)
+   tblINDIAN <- singleRace(varString = varStringINDIAN,race =  "American Indian", msa = msa)
+   tblASIAN <- singleRace(varString = varStringASIAN,race =  "Asian", msa = msa)
+   tblISLANDER <- singleRace(varString = varStringISLANDER,race =  "Pacific Islander", msa = msa)
+   tblOTHER <- singleRace(varString = varStringOTHER,race =  "Other", msa = msa)
+   tblTWO <- singleRace(varString = varStringTWO,race =  "Multiple races", msa = msa)
+   tblNONHISP <- singleRace(varString = varStringNONHISP,race =  "White Non-Hispanic", msa = msa)
+   tblHISP <- singleRace(varString = varStringHISP,race =  "Hispanic", msa = msa)
    
    
    all <- bind_rows(tblWHITE, tblBLACK, tblINDIAN, tblASIAN, tblISLANDER, tblOTHER, tblTWO, tblNONHISP, tblHISP) %>%
@@ -113,4 +113,4 @@ getMSAMeansTravelByRace <- function(msa) {
 
 # example
 PortlandTravelMeansByRace <- getMSAMeansTravelByRace(msa = 38900)
-ggplot(PortlandTravelMeansByRace, aes(x = race, y = estimate, fill = mode)) + geom_bar(stat = "identity", position = "dodge") + theme_bw() + ylab("Number of Commuters") + xlab("Workers Annual Salary (2012 adj.)")
+ggplot(PortlandTravelMeansByRace, aes(x = race, y = estimate, fill = mode)) + geom_bar(stat = "identity", position = "dodge") + theme_bw() + ylab("Number of Commuters") + xlab("Workers Annual Salary (2012 adj.)") + coord_flip()
