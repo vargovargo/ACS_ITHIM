@@ -1,3 +1,4 @@
+rm(list=ls())
 library(jsonlite)
 library(tidyverse)
 
@@ -125,7 +126,9 @@ getCountyMeansTravelByIncome <- function(msa) {
 PortlandTravelMeansByIncome <- getCountyMeansTravelByIncome(msa = 38900)
 ggplot(PortlandTravelMeansByIncome, aes(x = income, y = estimate, fill = mode)) + geom_bar(stat = "identity", position = "dodge") + theme_bw() + ylab("Number of Commuters") + xlab("Workers Annual Salary (2012 adj.)") 
 
-getCountyMeansTravelByIncome(msa = 38900) %>% 
+
+PortlandTravelMeansByIncome <- getCountyMeansTravelByIncome(msa = 38900)
+PortlandTravelMeansByIncome %>% 
   group_by(name, msa, income) %>%
   summarise(incomeTotal = sum(estimate, na.rm=T)) %>%
   right_join(., PortlandTravelMeansByIncome) %>%
