@@ -125,4 +125,11 @@ getCountyMeansTravelByIncome <- function(msa) {
 PortlandTravelMeansByIncome <- getCountyMeansTravelByIncome(msa = 38900)
 ggplot(PortlandTravelMeansByIncome, aes(x = income, y = estimate, fill = mode)) + geom_bar(stat = "identity", position = "dodge") + theme_bw() + ylab("Number of Commuters") + xlab("Workers Annual Salary (2012 adj.)") 
 
+PortlandTravelMeansByIncome %>% 
+  group_by(name, msa, income) %>%
+  summarise(incomeTotal = sum(estimate, na.rm=T)) %>%
+  right_join(., PortlandTravelMeansByIncome) %>%
+  mutate(fraction = 100*estimate/incomeTotal) %>%
+  ggplot(aes(x = income, y = fraction, color = mode)) + geom_point(stat = "identity", size=2,  alpha=0.9) + theme_bw() + ylab("% of Commuters in Income Group") + xlab("Workers Annual Salary (2012 adj.)")
+
 

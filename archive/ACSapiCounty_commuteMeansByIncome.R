@@ -126,6 +126,17 @@ getCountyMeansTravelByIncome <- function(state, county) {
 # getCountyMeansTravelByIncome(state = 55,county = 025) %>%  ggplot(aes(x=income, y=estimate, fill=mode)) + geom_bar(stat="identity")
 
 DaneTravelMeansByIncome <- getCountyMeansTravelByIncome(state = 55, county = 025)
-ggplot(DaneTravelMeansByIncome, aes(x = income, y = estimate, fill = mode)) + geom_bar(stat = "identity", position = "dodge") + theme_bw() + ylab("Number of Commuters") + xlab("Workers Annual Salary (2012 adj.)")
+DaneTravelMeansByIncome %>% 
+  ggplot(aes(x = mode, y = estimate, fill = income)) + geom_bar(stat = "identity", position = "dodge") + theme_bw() + ylab("Number of Commuters") + xlab("Mode of Commute")
+
+DaneTravelMeansByIncome %>% 
+  ggplot(aes(x = income, y = estimate, fill = mode)) + geom_bar(stat = "identity") + theme_bw() + ylab("Number of Commuters") + xlab("Workers Annual Salary (2012 adj.)")
+
+DaneTravelMeansByIncome %>% 
+  group_by(name, state, county, income) %>%
+  summarise(incomeTotal = sum(estimate, na.rm=T)) %>%
+  right_join(., DaneTravelMeansByIncome) %>%
+  mutate(fraction = 100*estimate/incomeTotal) %>%
+  ggplot(aes(x = income, y = fraction, color = mode)) + geom_point(stat = "identity", size=2, alpha=0.7) + theme_bw() + ylab("% of Commuters in Income Group") + xlab("Workers Annual Salary (2012 adj.)")
 
 
