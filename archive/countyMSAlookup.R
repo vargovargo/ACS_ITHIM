@@ -8,6 +8,17 @@ getTractAgeSex <- function(state, county) {
   
   # https://api.census.gov/data/2015/acs5?get=NAME,B01001_001E&for=county:013&in=state:02
   
+  
+  countyList <-  as.data.frame(fromJSON("https://api.census.gov/data/2015/acs5?get=NAME&for=county:*&in=state:*&key=f78d6b6c18608edc379b5a06c55407ceb45e7038")) %>% .[-1,] %>% 
+    mutate(county = matrix(unlist(stringr::str_split(V1, ", ")), ncol = 2, byrow = T)[,1], 
+           state = matrix(unlist(stringr::str_split(V1, ", ")), ncol = 2, byrow = T)[,2]) %>%
+    filter(state != "Puerto Rico") %>%
+    mutate(county = matrix(unlist(stringr::str_split(county, " County")), ncol = 2, byrow = T)[,1]) 
+    
+  
+  
+
+  
   ACSpop <-
     as.data.frame(fromJSON(
       paste(
